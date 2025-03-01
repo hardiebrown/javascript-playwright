@@ -14,7 +14,7 @@ export default defineConfig({
   ],
 
   use: {
-    headless: false,  // Run tests in headless mode
+    headless: true,  // Run tests in headless mode
     viewport: { width: 1280, height: 720 },  
     actionTimeout: 10000,  // Timeout per action
     trace: 'on-first-retry',  // Collect trace only if test fails on retry
