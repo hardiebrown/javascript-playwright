@@ -1,5 +1,9 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 export default defineConfig({
   testDir: './tests',  
@@ -7,12 +11,10 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,  // Fail CI build if test.only is present
   retries: process.env.CI ? 2 : 0,  // Retry failed tests in CI
   workers: process.env.CI ? 1 : undefined,  // Run tests sequentially in CI
-
   reporter: [
     ['html', { outputFolder: 'playwright-report' }], // Generates HTML report in `playwright-report/`
     ['json', { outputFile: 'playwright-report/test-results.json' }], // JSON report stored in `playwright-report/`
   ],
-
   use: {
     headless: true,  // Run tests in headless mode
     viewport: { width: 1280, height: 720 },  
@@ -20,6 +22,8 @@ export default defineConfig({
     trace: 'on-first-retry',  // Collect trace only if test fails on retry
     screenshot: 'only-on-failure',  // Capture screenshots only on failure
     video: 'on-first-retry',  // Record video only if test fails
+    testIdAttribute: 'id',
+    baseURL: process.env.BASE_URL || 'https://www.gov.uk',
   },
 
   /* Configure projects for different browsers */
@@ -37,4 +41,6 @@ export default defineConfig({
     //   use: { ...devices['Desktop Safari'] },
     // },
   ],
+
+  
 });

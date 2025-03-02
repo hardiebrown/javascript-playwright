@@ -5,3 +5,15 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+traces/
+screenshots/
+videos/
+allure-results/
+allure-report/
+reports/
+*.log
+*.tmp
+.env
+.vscode/
+.idea/
+*.iml
