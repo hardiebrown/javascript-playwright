@@ -1,32 +1,53 @@
 const { test, expect } = require("@playwright/test");
+const testData = require("../../testData/holidayEntitlementData.json"); 
 const HolidayCalculatorPage = require("../../pages/HolidayCalculatorPage");
+const ResultsPage = require('../../pages/ResultsPage');
+const LeaveDatePage = require('../../pages/LeaveDatePage'); 
+const WorkPatternPage = require('../../pages/WorkPatternPage');
 
 test(`Calculate Holiday for employee starting mid year with annualised hours.`, async ({ page }) => {
+  //Initialize Page Objects
   const holidayCalculator = new HolidayCalculatorPage(page);
-  // Step 1: Navigate & Accept Cookies
-  await holidayCalculator.navigate();
-  await holidayCalculator.acceptCookies();
-  // Step 2: Complete the Form
-  await holidayCalculator.selectStartNow();
-  await holidayCalculator.selectNoIrregularHours();
-  await holidayCalculator.selectAnnualisedHours();
-  await holidayCalculator.selectStartMidYear();
-  await holidayCalculator.enterEmploymentStartDate('01','05','2024');
-  await holidayCalculator.enterLeaveYearStartDate('01','01','2024');
-  // Step 3: Verify the holiday entitlement result
-  const holidayEntitlement = await holidayCalculator.getHolidayEntitlement();
-  expect(holidayEntitlement).toContain("3.74 weeks");
-  //Step 7: Does the employee work irregular hours or for part of the year?
-  expect(holidayEntitlement).toContain("No");
-  //Step 6: Is the holiday entitlement based on:
-  expect(holidayEntitlement).toContain("annualised hours");
-  //Step 5: Do you want to work out holiday.
-  expect(holidayEntitlement).toContain("for someone starting part way through a leave year");
-  //Step 5: Do you want to work out holiday.
-  expect(holidayEntitlement).toContain("1 May 2024");
-  //Step 7: Number of days worked per week?
-  expect(holidayEntitlement).toContain("1 January 2024");
+  const resultsPage = new ResultsPage(page);
+  const leaveDatePage = new LeaveDatePage(page);
+  const workPatternPage = new WorkPatternPage(page);
+  const expectedStartDate = await leaveDatePage.getFormattedEntitlementDate(testData.startMidYearEmployee.employmentStartDate);
+  const expectedLeaveYearStartDate = await leaveDatePage.getFormattedEntitlementDate(testData.startMidYearEmployee.employmentLeaveYearStartDate);
+
+  await test.step("Open the Holiday Entitlement Calculator", async () => {
+    await holidayCalculator.navigate();
+  });
+  await test.step("Accept Cookies if they are visible", async () => {
+    await holidayCalculator.acceptCookies();
+  });
+  await test.step("Select start now button", async () => {
+    await holidayCalculator.selectStartNow();
+  });
+  await test.step("Complete the form", async () => {
+  await workPatternPage.selectIrregularHours('no');
+  await workPatternPage.selectHolidayEntitlement('annualised');
+  await workPatternPage.selectWorkOutHolidayFor('starting');
+  await leaveDatePage.enterEmploymentStartDate(testData.startMidYearEmployee.employmentStartDate);
+  await leaveDatePage.enterLeaveYearStartDate(testData.startMidYearEmployee.employmentLeaveYearStartDate);
+  });
+  await test.step(`Verify the holiday entitlement is ${testData.startMidYearEmployee.expectedEntitlement}`, async () => {
+    await expect(resultsPage.getHolidayEntitlementSummary()).toContainText(testData.startMidYearEmployee.expectedEntitlement);
+  });
+  await test.step("Verify form has the correct inputs", async () => {
+  await expect(resultsPage.getHolidayEntitlementSummary()).toContainText('No');
+  await expect(resultsPage.getHolidayEntitlementSummary()).toContainText('annualised hours');
+  await expect(resultsPage.getHolidayEntitlementSummary()).toContainText('for someone starting part way through a leave year');
+  await expect(resultsPage.getHolidayEntitlementSummary()).toContainText(expectedStartDate);
+  await expect(resultsPage.getHolidayEntitlementSummary()).toContainText(expectedLeaveYearStartDate);
+  });
+  await test.step(`Start again link is visible.`, async () => {
+    await expect(resultsPage.startAgainLink).toBeVisible();
+  });
+  await test.step(`Verify URL.`, async () => {
+    await expect(page).toHaveURL(/annualised-hours/);
+  });
   console.log(
-    `✅ Verified: 3.74 weeks holiday with annualised hours. Employee start date 01/05/2024. Leave Year start date 01/01/2025.`
+    `✅ Verified: ${testData.startMidYearEmployee.expectedEntitlement} holiday. 
+    Start date -> ${expectedStartDate}. Leave Year Start Date -> ${expectedLeaveYearStartDate}`
   );
 });

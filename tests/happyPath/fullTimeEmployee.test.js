@@ -1,37 +1,47 @@
 const { test, expect } = require('@playwright/test');
-const fs = require('fs');
-import Papa from 'papaparse';
+const testData = require("../../testData/holidayEntitlementData.json"); 
 const HolidayCalculatorPage = require('../../pages/HolidayCalculatorPage');
-
-// Read CSV File
-const csvData = fs.readFileSync('testData/holidayData.csv', 'utf8');
-const testCases = Papa.parse(csvData, { header: true }).data;
+const ResultsPage = require('../../pages/ResultsPage');
+const WorkPatternPage = require('../../pages/WorkPatternPage');
 
 // Parameterized Test for Different Work Patterns
-testCases.forEach(({ days_worked, expected_holiday }) => {
-    // console.log("Parsed Test Cases:", testCases);
-    test(`Calculate Holiday for ${days_worked} Days Worked`, async ({ page }) => {
+testData.fullTimeEmployee.forEach(({ daysWorked, expectedEntitlement }) => {
+    test(`Calculate Holiday for full time employee with ${daysWorked} Days Worked per week.`, async ({ page }) => {
+        //Initialize Page Objects
         const holidayCalculator = new HolidayCalculatorPage(page);
-        // Step 1: Navigate & Accept Cookies
-        await holidayCalculator.navigate();
-        await holidayCalculator.acceptCookies();
-        // Step 2: Complete the Form
-        await holidayCalculator.selectStartNow();
-        await holidayCalculator.selectNoIrregularHours();
-        await holidayCalculator.selectDaysWorkedPerWeek();
-        await holidayCalculator.selectFullLeaveYear();
-        await holidayCalculator.enterDaysWorked(days_worked);
-        // Step 3: Verify the holiday entitlement result
-        const holidayEntitlement = await holidayCalculator.getHolidayEntitlement();
-        expect(holidayEntitlement).toContain(expected_holiday);
-        //Step 7: Does the employee work irregular hours or for part of the year?
-        expect(holidayEntitlement).toContain("No");
-        //Step 6: Is the holiday entitlement based on:
-        expect(holidayEntitlement).toContain("days worked per week");
-        //Step 5: Do you want to work out holiday.
-        expect(holidayEntitlement).toContain("for a full leave year");
-        //Step 7: Number of days worked per week?
-        expect(holidayEntitlement).toContain(days_worked);
-        console.log(`✅ Verified: ${days_worked} days → ${expected_holiday} expected.`);
+        const resultsPage = new ResultsPage(page);
+        const workPatternPage = new WorkPatternPage(page);
+
+        await test.step("Open the Holiday Entitlement Calculator", async () => {
+            await holidayCalculator.navigate();
+        });
+        await test.step("Accept Cookies if they are visible", async () => {
+            await holidayCalculator.acceptCookies();
+        });
+        await test.step("Select start now button", async () => {
+            await holidayCalculator.selectStartNow();
+        });
+        await test.step("Complete the form", async () => {
+            await workPatternPage.selectIrregularHours('no');
+            await workPatternPage.selectHolidayEntitlement('days');
+            await workPatternPage.selectWorkOutHolidayFor('full_year');
+            await workPatternPage.enterDaysWorked(daysWorked);
+        });
+        await test.step(`Verify the holiday entitlement is ${expectedEntitlement}`, async () => {
+            await expect(resultsPage.getHolidayEntitlementSummary()).toContainText(expectedEntitlement);
+        });
+        await test.step("Verify form has the correct inputs", async () => {
+            await expect(resultsPage.getHolidayEntitlementSummary()).toContainText('No')
+            await expect(resultsPage.getHolidayEntitlementSummary()).toContainText('days worked per week')
+            await expect(resultsPage.getHolidayEntitlementSummary()).toContainText('for a full leave year')
+            await expect(resultsPage.getHolidayEntitlementSummary()).toContainText(daysWorked)
+        });
+        await test.step(`Start again link is visible.`, async () => {
+            await expect(resultsPage.startAgainLink).toBeVisible();
+        });
+        await test.step(`Verify URL.`, async () => {
+            await expect(page).toHaveURL(/days-worked-per-week/);
+        });
+        console.log(`✅ Verified: ${daysWorked} days → ${expectedEntitlement} expected.`);
     });
 });

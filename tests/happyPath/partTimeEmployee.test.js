@@ -1,8 +1,15 @@
 const { test, expect } = require("@playwright/test");
+const testData = require("../../testData/holidayEntitlementData.json"); 
 const HolidayCalculatorPage = require("../../pages/HolidayCalculatorPage");
+const ResultsPage = require('../../pages/ResultsPage');
+const WorkPatternPage = require('../../pages/WorkPatternPage');
 
-test(`Calculate Holiday for 20 hours Worked`, async ({ page }) => {
+test(`Calculate Holiday for part time ${testData.partTimeEmployee.hoursWorked} worked per week.`, async ({ page }) => {
+  //Initialize Page objects
   const holidayCalculator = new HolidayCalculatorPage(page);
+  const resultsPage = new ResultsPage(page);
+  const workPatternPage = new WorkPatternPage(page);
+
   await test.step("Open the Holiday Entitlement Calculator", async () => {
     await holidayCalculator.navigate();
   });
@@ -13,26 +20,29 @@ test(`Calculate Holiday for 20 hours Worked`, async ({ page }) => {
     await holidayCalculator.selectStartNow();
   });
   await test.step("Complete the form", async () => {
-    await holidayCalculator.selectNoIrregularHours();
-    await holidayCalculator.selectHoursWorkedPerWeek();
-    await holidayCalculator.selectFullLeaveYear();
-    await holidayCalculator.enterHoursWorked("20");
-    await holidayCalculator.enterDaysWorked("3");
+    await workPatternPage.selectIrregularHours('no');
+    await workPatternPage.selectHolidayEntitlement('hours');
+    await workPatternPage.selectWorkOutHolidayFor('full_year');
+    await workPatternPage.enterHoursWorked(testData.partTimeEmployee.hoursWorked);
+    await workPatternPage.enterDaysWorked(testData.partTimeEmployee.daysWorked);
   });
-  await test.step("Verify the holiday entitlement is 112 hours", async () => {
-    const holidayEntitlement = await holidayCalculator.getHolidayEntitlement();
-    expect(holidayEntitlement).toContain("112 hours");
+  await test.step(`Verify the holiday entitlement is ${testData.partTimeEmployee.hoursWorked}`, async () => {
+    await expect(resultsPage.getHolidayEntitlementSummary()).toContainText(testData.partTimeEmployee.expectedEntitlement)
   });
   await test.step("Verify form has the correct inputs", async () => {
-    const holidayEntitlement = await holidayCalculator.getHolidayEntitlement();
-    expect(holidayEntitlement).toContain("No");
-    expect(holidayEntitlement).toContain("hours worked per week");
-    expect(holidayEntitlement).toContain("for a full leave year");
-    expect(holidayEntitlement).toContain("20.0");
-    expect(holidayEntitlement).toContain("3.0");
+    await expect(resultsPage.getHolidayEntitlementSummary()).toContainText('No')
+    await expect(resultsPage.getHolidayEntitlementSummary()).toContainText('hours worked per week')
+    await expect(resultsPage.getHolidayEntitlementSummary()).toContainText('for a full leave year')
+    await expect(resultsPage.getHolidayEntitlementSummary()).toContainText(testData.partTimeEmployee.hoursWorked)
+    await expect(resultsPage.getHolidayEntitlementSummary()).toContainText(testData.partTimeEmployee.daysWorked)
   });
-  // await test.step("Verify URL", async () => {
-  //   await expect(page).toHaveURL(`${baseURL}/calculate-your-holiday-entitlement/y/regular/hours-worked-per-week/full-year/20.0/3.0`);
-  // });
-  console.log(`✅ Verified: 20 hours at 3 days per week → 112 hours expected.`);
+  await test.step(`Start again link is visible.`, async () => {
+    await expect(resultsPage.startAgainLink).toBeVisible();
+  });
+  await test.step(`Verify URL.`, async () => {
+    await expect(page).toHaveURL(/hours-worked-per-week/);
+  });
+
+
+  console.log(`✅ Verified: Calculate Holiday for ${testData.partTimeEmployee.hoursWorked} worked per week.`);
 });
