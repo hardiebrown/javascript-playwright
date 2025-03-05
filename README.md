@@ -15,7 +15,7 @@
 ### **1️⃣ Install Dependencies**
 
 ```sh
-npm install --save-dev @playwright/test 
+npm install
 ```
 
 ## ▶ Running Tests
