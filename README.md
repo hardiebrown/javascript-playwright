@@ -72,6 +72,8 @@ Low contrast with placeholder text on form inputs. Light grey text against a whi
 
 - First Name, Email, and Your Message placeholder text has low contrast against a white background.
 
+![Alt Text](image.png)
+
 ---
 
 List of Accessibility issues:
