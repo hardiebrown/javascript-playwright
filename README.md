@@ -12,17 +12,10 @@
 
 ## Setup Instructions
 
-### **1️⃣ Install Playwright**
+### **1️⃣ Install Dependencies**
 
 ```sh
 npm install --save-dev @playwright/test 
-```
-
-### **2️⃣ Install Required Dependencies**
-
-```sh
-npm install dotenv
-npm install date-fns
 ```
 
 ## ▶ Running Tests
