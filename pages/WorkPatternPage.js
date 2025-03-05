@@ -20,8 +20,11 @@ class WorkPatternPage {
         starting_and_leaving: page.getByRole("radio", { name: "for someone starting and leaving part way through a leave year" }),
       };
       //Inputs
-      this.daysInput = page.getByTestId("response");
-      this.hoursInput = page.getByTestId("response");
+      this.daysInput = page.getByRole('textbox', { name: 'Days worked' });
+      this.hoursInput = page.getByRole('textbox', { name: 'Hours worked' });
+      this.shiftHours = page.getByRole('textbox', { name: 'How many hours in each shift' });
+      this.noOfShifts = page.getByRole('textbox', { name: 'How many shifts will be worked per shift pattern' });
+      this.shiftDays = page.getByRole('textbox', { name: 'How many days in the shift pattern' });
       //Error Messages
       this.errorMessage = page.getByTestId("error-summary");
       //Continue Button
@@ -61,6 +64,18 @@ class WorkPatternPage {
       }
       async enterHoursWorked(hours) {
         await this.hoursInput.fill(hours);
+        await this.continueButton.click();
+      }
+      async enterShiftHours(hours) {
+        await this.shiftHours.fill(hours);
+        await this.continueButton.click();
+      }
+      async enterNoOfShifts(shifts) {
+        await this.noOfShifts.fill(shifts);
+        await this.continueButton.click();
+      }
+      async enterShiftDays(days) {
+        await this.shiftDays.fill(days);
         await this.continueButton.click();
       }
       getErrorElement() {

@@ -4,9 +4,9 @@ const HolidayCalculatorPage = require('../../pages/HolidayCalculatorPage');
 const ResultsPage = require('../../pages/ResultsPage');
 const WorkPatternPage = require('../../pages/WorkPatternPage');
 
-// Parameterized Test for Different Work Patterns
-testData.fullTimeEmployee.forEach(({ daysWorked, expectedEntitlement }) => {
-    test(`Calculate Holiday for full time employee with ${daysWorked} Days Worked per week.`, async ({ page }) => {
+// Parameterized Test for Different dat sets
+testData.fullLeaveYearEmployee.forEach(({ daysWorked, expectedEntitlement }) => {
+    test(`Calculate Holiday for full leave year employee with ${daysWorked} Days Worked per week.`, async ({ page }) => {
         //Initialize Page Objects
         const holidayCalculator = new HolidayCalculatorPage(page);
         const resultsPage = new ResultsPage(page);

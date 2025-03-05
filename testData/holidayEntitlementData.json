@@ -1,5 +1,5 @@
 {
-  "fullTimeEmployee": [
+  "fullLeaveYearEmployee": [
     {
       "daysWorked": "5.0",
       "expectedEntitlement": "28 days"
@@ -21,11 +21,12 @@
       "expectedEntitlement": "5.6 days"
     }
   ],
-
-  "partTimeEmployee": {
+  "startingAndLeavingEmployee": {
     "hoursWorked": "20.0",
     "daysWorked": "3.0",
-    "expectedEntitlement": "112 hours"
+    "employmentStartDate": {"day": "15", "month": "12", "year": "2019"},
+    "employmentEndDate": {"day": "31", "month": "12", "year": "2019"},
+    "expectedEntitlement": "5.3 hours"
   },
   "startMidYearEmployee": {
     "employmentStartDate": {"day": "01", "month": "05", "year": "2024"},
@@ -38,6 +39,13 @@
     "employmentEndDate": {"day": "01", "month": "05", "year": "2024"},
     "employmentLeaveYearStartDate": {"day": "01", "month": "01","year": "2024"},
     "expectedEntitlement": "65 hours and 24 minutes"
+  },
+  "irregularHoursEmployee": {
+    "shiftHours": "10.0",
+    "noOfShifts": "150",
+    "shiftDays": "160",
+    "employmentLeaveYearStartDate": {"day": "01", "month": "01","year": "2020"},
+    "expectedEntitlement": "28 shifts"
   },
 
   "daysWorkedPerWeekValidation": [
