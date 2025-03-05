@@ -6,7 +6,7 @@ const WorkPatternPage = require('../../pages/WorkPatternPage');
 const LeaveDatePage = require('../../pages/LeaveDatePage'); 
 
 
-test(`Calculate Holiday for employee starting and leaving with ${testData.startingAndLeavingEmployee.hoursWorked} worked per week.`, async ({ page }) => {
+test(`Calculate Holiday for employee starting and leaving with ${testData.startingAndLeavingEmployee.hoursWorked} hours orked per week.`, async ({ page }) => {
   //Initialize Page objects
   const holidayCalculator = new HolidayCalculatorPage(page);
   const resultsPage = new ResultsPage(page);
