@@ -1,14 +1,3 @@
-name: Playwright Tests CI
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -21,10 +10,4 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Start Docker Compose Services
-        run: docker-compose up --scale playwright-test=2 --abort-on-container-exit
-
-      - name: Upload Playwright Test Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: Playwright-Test-Report
-          path: playwright-report/
+        run: docker compose up --scale playwright-test=2 --abort-on-container-exit
