@@ -3,32 +3,31 @@ name: Playwright Tests CI
 on:
   push:
     branches:
-      - main  # ✅ Runs on push to `main`
+      - main
   pull_request:
     branches:
-      - main  # ✅ Runs on PRs to `main`
-  workflow_dispatch:  # ✅ Enables the "Run Workflow" button
-
+      - main
+  workflow_dispatch:  # ✅ Allows manual triggering
 
 jobs:
   test:
-    runs-on: ubuntu-latest  # ✅ Uses GitHub’s hosted Linux runner
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # ✅ Ensures latest code is pulled
+        uses: actions/checkout@v4  # ✅ Correctly using `uses`
 
-      - name: Set up Docker Buildx (for better caching)
-        uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2  # ✅ Correctly using `uses`
 
       - name: Build Docker Image
-        run: docker build -t playwright-tests .
+        run: docker build -t playwright-tests .  # ✅ Correctly using `run`
 
       - name: Run Playwright Tests in Docker
-        run: docker run --rm playwright-tests
+        run: docker run --rm playwright-tests  # ✅ Correctly using `run`
 
-      - name: Upload Playwright Test Report (Artifacts)
-      - uses: actions/upload-artifact@v4
+      - name: Upload Playwright Test Report
+        uses: actions/upload-artifact@v4  # ✅ Correctly using `uses`
         with:
           name: Playwright-Test-Report
           path: playwright-report/
