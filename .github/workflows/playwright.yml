@@ -19,9 +19,9 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-
+      
       - name: Start Docker Compose Services
-        run: docker compose up --scale playwright-test=2 --abort-on-container-exit  # ✅ Changed from `docker-compose` to `docker compose`
+        run: docker compose up --abort-on-container-exit
 
       - name: Upload Playwright Test Report
         uses: actions/upload-artifact@v4
