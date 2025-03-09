@@ -1,11 +1,15 @@
-version: '3.8'  # ✅ Remove if warned that `version` is obsolete
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-services:
-  playwright-test:
-    build: .
-    command: ["npx", "playwright", "test", "--shard=1/2"]
-    environment:
-      - BASE_URL=https://www.gov.uk
-      - DOCKER=true
-    volumes:
-      - ./playwright-report:/app/playwright-report
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Install Docker Compose
+        run: sudo apt update && sudo apt install docker-compose -y  # ✅ Ensures Docker Compose is installed
+
+      - name: Start Docker Compose Services
+        run: docker compose up --scale playwright-test=2 --abort-on-container-exit
