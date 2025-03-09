@@ -1,0 +1,11 @@
+version: '3.8'  # ✅ Remove if warned that `version` is obsolete
+
+services:
+  playwright-test:
+    build: .
+    command: ["npx", "playwright", "test", "--shard=1/2"]
+    environment:
+      - BASE_URL=https://www.gov.uk
+      - DOCKER=true
+    volumes:
+      - ./playwright-report:/app/playwright-report

@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:  # ✅ Allows manual triggering
+  workflow_dispatch:
 
 jobs:
   test:
@@ -20,14 +20,8 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build Docker Image
-        run: docker build -t playwright-tests .
-
-      - name: Run Playwright Tests in Docker
-        run: docker run --rm -v ${{ github.workspace }}/playwright-report:/app/playwright-report playwright-tests
-
-      - name: Ensure Report Folder Exists
-        run: mkdir -p playwright-report  # ✅ Creates the report folder if missing
+      - name: Start Docker Compose Services
+        run: docker-compose up --scale playwright-test=2 --abort-on-container-exit
 
       - name: Upload Playwright Test Report
         uses: actions/upload-artifact@v4
