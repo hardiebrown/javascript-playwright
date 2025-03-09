@@ -10,7 +10,7 @@ export default defineConfig({
   fullyParallel: true,  // Run tests in parallel
   forbidOnly: !!process.env.CI,  // Fail CI build if test.only is present
   retries: process.env.CI ? 2 : 0,  // Retry failed tests in CI
-  workers: process.env.CI ? 1 : undefined,  // Run tests sequentially in CI
+  workers: process.env.DOCKER ? 4 : process.env.CI ? 1 : undefined,  // ✅ Use 4 workers in Docker, 1 in CI
   reporter: [
     ['html', { outputFolder: 'playwright-report' }], // Generates HTML report in `playwright-report/`
     ['json', { outputFile: 'playwright-report/test-results.json' }], // JSON report stored in `playwright-report/`
