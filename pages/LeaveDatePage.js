@@ -22,6 +22,7 @@ class LeaveDatePage {
     formatDate({ day, month, year }, dateFormat = 'd MMMM yyyy') {
         return format(parse(`${year}-${month}-${day}`, 'yyyy-MM-dd', new Date()), dateFormat);
     }
+  
     async enterEmploymentStartDate({ day, month, year }) {
         await this.employmentStartDay.fill(day);
         await this.employmentStartMonth.fill(month);
